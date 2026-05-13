@@ -16,7 +16,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     # React dev server
-    allow_origins=["https://multi-agent-restaurant-assistant.vercel.app/"],
+    allow_origins=["https://multi-agent-restaurant-assistant.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],  # or ["POST", "GET"]
     allow_headers=["*"],
