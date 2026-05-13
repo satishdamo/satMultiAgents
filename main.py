@@ -55,7 +55,7 @@ async def chat(request: UserRequest):
         "next_agent_decision": result.get("next_agent", "")
     }
 
-    save_trace(trace)
+    # save_trace(trace)
 
     return {"response": result["response"]}
 
