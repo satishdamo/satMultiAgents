@@ -1,0 +1,10 @@
+.env
+references/*
+workflow_diagrams/*
+__pycache__/
+*.pyc
+# exclude the folder contents but keep the folder
+execution_traces/*
+!execution_traces/.gitkeep
+# ignore all the venv folders in the project
+**/venv/

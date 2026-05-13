@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Multi-Agent Orchestration Dashboard</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .header {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .header h1 {
+        color: #667eea;
+        margin-bottom: 10px;
+        font-size: 2.5em;
+      }
+
+      .header p {
+        color: #666;
+        font-size: 1.1em;
+      }
+
+      .dashboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .card {
+        background: white;
+        border-radius: 10px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      .card h2 {
+        color: #667eea;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .card-icon {
+        font-size: 1.5em;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+
+      .stat-item {
+        background: #f5f7fa;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 2em;
+        font-weight: bold;
+        color: #667eea;
+      }
+
+      .stat-label {
+        color: #999;
+        font-size: 0.9em;
+        margin-top: 5px;
+      }
+
+      .graph-structure {
+        background: white;
+        border-radius: 10px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+      }
+
+      .graph-structure h2 {
+        color: #667eea;
+        margin-bottom: 20px;
+      }
+
+      .flow-diagram {
+        background: #f9fafb;
+        padding: 20px;
+        border-radius: 8px;
+        font-family: monospace;
+        overflow-x: auto;
+      }
+
+      .flow-item {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+        gap: 10px;
+      }
+
+      .flow-node {
+        background: #667eea;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 5px;
+        white-space: nowrap;
+        font-weight: bold;
+      }
+
+      .flow-arrow {
+        color: #667eea;
+        font-weight: bold;
+      }
+
+      .agent-route {
+        background: #f5f7fa;
+        padding: 15px;
+        border-left: 4px solid #667eea;
+        border-radius: 5px;
+        margin: 10px 0;
+      }
+
+      .agent-route.ordering {
+        border-left-color: #2196f3;
+      }
+
+      .agent-route.menu {
+        border-left-color: #ff9800;
+      }
+
+      .agent-route.grievance {
+        border-left-color: #f44336;
+      }
+
+      .agent-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        font-weight: bold;
+        margin-right: 8px;
+      }
+
+      .agent-badge.ordering {
+        background: #bbdefb;
+        color: #0d47a1;
+      }
+
+      .agent-badge.menu {
+        background: #ffe0b2;
+        color: #e65100;
+      }
+
+      .agent-badge.grievance {
+        background: #ffcdd2;
+        color: #b71c1c;
+      }
+
+      .query-text {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      .agents-list {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+
+      .footer {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        color: #999;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .section-title {
+        color: white;
+        font-size: 1.3em;
+        margin: 30px 0 20px 0;
+        font-weight: bold;
+      }
+
+      .instructions {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .instructions h3 {
+        color: #667eea;
+        margin-bottom: 10px;
+      }
+
+      .instructions ol {
+        margin-left: 20px;
+        color: #666;
+        line-height: 1.8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🤖 Multi-Agent Orchestration Dashboard</h1>
+        <p>
+          Visualizing the graph structure and execution flow of the LangGraph
+          orchestration system
+        </p>
+      </div>
+
+      <div class="instructions">
+        <h3>📊 Graph Visualization Files</h3>
+        <ol>
+          <li>
+            <strong
+              ><a
+                href="./multi-agentic-supervisor-state-graph.png"
+                target="_blank"
+                >multi-agentic-supervisor-state-graph</a
+              ></strong
+            >
+            > - Main PNG diagram showing all nodes and edges
+          </li>
+        </ol>
+      </div>
+
+      <div class="dashboard">
+        <div class="card">
+          <h2><span class="card-icon">🏗️</span> System Architecture</h2>
+          <div class="stats">
+            <div class="stat-item">
+              <div class="stat-value">1</div>
+              <div class="stat-label">Entry Point</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">4</div>
+              <div class="stat-label">Total Nodes</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">3</div>
+              <div class="stat-label">Worker Agents</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">∞</div>
+              <div class="stat-label">Possible Routes</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2><span class="card-icon">⚡</span> Agents & Their Roles</h2>
+          <div class="agent-route ordering">
+            <span class="agent-badge ordering">ORDERING</span>
+            <p>Handles food orders</p>
+          </div>
+          <div class="agent-route menu">
+            <span class="agent-badge menu">MENU</span>
+            <p>Suggests dishes & desserts</p>
+          </div>
+          <div class="agent-route grievance">
+            <span class="agent-badge grievance">GRIEVANCE</span>
+            <p>Handles complaints</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2><span class="card-icon">🎯</span> Routing Logic</h2>
+          <p><strong>Entry:</strong> Supervisor Agent analyzes all queries</p>
+          <p style="margin-top: 10px; color: #666; font-size: 0.9em">
+            The supervisor uses LLM intelligence to decide which agent to call
+            based on the query content. It can route to ordering, menu,
+            grievance agents, or end the conversation.
+          </p>
+        </div>
+      </div>
+
+      <div class="graph-structure">
+        <h2>📈 Orchestration Flow Diagram</h2>
+        <div class="flow-diagram">
+          <div class="flow-item">
+            <span class="flow-node">START</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-node">Supervisor</span>
+          </div>
+          <div
+            style="
+              margin-left: 20px;
+              border-left: 2px dashed #667eea;
+              padding-left: 20px;
+              padding-top: 10px;
+              padding-bottom: 10px;
+            "
+          >
+            <div class="flow-item">
+              <span class="flow-node" style="background: #2196f3"
+                >Ordering</span
+              >
+              <span class="flow-arrow">↻</span>
+              <span class="flow-node">Supervisor</span>
+            </div>
+            <div class="flow-item" style="margin-top: 15px">
+              <span class="flow-node" style="background: #ff9800">Menu</span>
+              <span class="flow-arrow">↻</span>
+              <span class="flow-node">Supervisor</span>
+            </div>
+            <div class="flow-item" style="margin-top: 15px">
+              <span class="flow-node" style="background: #f44336"
+                >Grievance</span
+              >
+              <span class="flow-arrow">↻</span>
+              <span class="flow-node">Supervisor</span>
+            </div>
+          </div>
+          <div class="flow-item" style="margin-top: 15px">
+            <span class="flow-node">Supervisor</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-node">END</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">📝 Example Query Paths</div>
+
+      <div
+        style="
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+          gap: 20px;
+        "
+      >
+        <div class="card">
+          <div class="query-text">🍕 "I'd like to order a pizza"</div>
+          <div class="agents-list">
+            <span class="agent-badge ordering">ORDERING</span>
+          </div>
+          <p style="margin-top: 10px; color: #666; font-size: 0.9em">
+            Routed to Ordering Agent to handle the pizza order with size and
+            toppings preferences.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="query-text">🍽️ "What desserts do you have?"</div>
+          <div class="agents-list">
+            <span class="agent-badge menu">MENU</span>
+          </div>
+          <p style="margin-top: 10px; color: #666; font-size: 0.9em">
+            Routed to Menu Agent to suggest dessert options and dish
+            recommendations.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="query-text">⚠️ "I received a cold meal"</div>
+          <div class="agents-list">
+            <span class="agent-badge grievance">GRIEVANCE</span>
+          </div>
+          <p style="margin-top: 10px; color: #666; font-size: 0.9em">
+            Routed to Grievance Agent to handle the complaint professionally and
+            offer resolution.
+          </p>
+        </div>
+      </div>
+
+      <div class="footer" style="margin-top: 40px">
+        <p>
+          ✨ This dashboard shows the multi-agent orchestration system powered
+          by LangGraph and FastAPI
+        </p>
+        <p style="margin-top: 10px; font-size: 0.9em">
+          For execution traces and detailed logs, see the
+          <code>execution_traces/</code> directory
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

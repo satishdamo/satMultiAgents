@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+langgraph >= 0.3
+langchain-openai >= 0.3
+python-dotenv
+pillow
+graphviz
