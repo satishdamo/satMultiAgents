@@ -43,7 +43,7 @@ def menu_agent(state: AgentState) -> AgentState:
 def grievance_agent(state: AgentState) -> AgentState:
     user_input = state["input"]
     current_response = state.get("response", "")
-    prompt = f"You are a grievance agent. Handle complaints politely. User said: {user_input}"
+    prompt = f"You are a grievance agent. Handle any complaints or concerns or issues politely. User said: {user_input}"
     reply = worker_llm.invoke(prompt)
     return {"response": current_response + "\nGrievance Agent: " + reply.content}
 

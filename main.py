@@ -7,9 +7,19 @@ from pathlib import Path
 import json
 from datetime import datetime
 from mermaid import Mermaid
-import cairosvg
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+
+# Allow your frontend origin
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # React dev server
+    allow_credentials=True,
+    allow_methods=["*"],  # or ["POST", "GET"]
+    allow_headers=["*"],
+)
 
 
 class UserRequest(BaseModel):
